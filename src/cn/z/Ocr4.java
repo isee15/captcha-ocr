@@ -27,7 +27,7 @@ public class Ocr4 {
 	private static boolean useSvm = true;
 
 	public static int getColorBright(int colorInt) {
-		Color color = new Color(colorInt);
+		final Color color = new Color(colorInt);
 		return color.getRed() + color.getGreen() + color.getBlue();
 
 	}
@@ -41,8 +41,8 @@ public class Ocr4 {
 
 	public static BufferedImage removeBackgroud(String picFile) throws Exception {
 		BufferedImage img = ImageIO.read(new File(picFile));
-		int width = img.getWidth();
-		int height = img.getHeight();
+		final int width = img.getWidth();
+		final int height = img.getHeight();
 		for (int x = 1; x < width - 1; ++x) {
 			for (int y = 1; y < height - 1; ++y) {
 				if (getColorBright(img.getRGB(x, y)) < 100) {
@@ -68,10 +68,10 @@ public class Ocr4 {
 	}
 
 	public static List<BufferedImage> splitImage(BufferedImage img) throws Exception {
-		List<BufferedImage> subImgs = new ArrayList<BufferedImage>();
-		int width = img.getWidth();
-		int height = img.getHeight();
-		List<Integer> weightlist = new ArrayList<Integer>();
+		final List<BufferedImage> subImgs = new ArrayList<BufferedImage>();
+		final int width = img.getWidth();
+		final int height = img.getHeight();
+		final List<Integer> weightlist = new ArrayList<Integer>();
 		for (int x = 0; x < width; ++x) {
 			int count = 0;
 			for (int y = 0; y < height; ++y) {
@@ -101,8 +101,8 @@ public class Ocr4 {
 	}
 
 	public static boolean isNotEight(BufferedImage img) {
-		int width = img.getWidth();
-		int height = img.getHeight();
+		final int width = img.getWidth();
+		final int height = img.getHeight();
 		int minCount = width;
 		for (int y = height / 2 - 2; y < height / 2 + 2; ++y) {
 			int count = 0;
@@ -117,8 +117,8 @@ public class Ocr4 {
 	}
 
 	public static boolean isNotThree(BufferedImage img) {
-		int width = img.getWidth();
-		int height = img.getHeight();
+		final int width = img.getWidth();
+		final int height = img.getHeight();
 		int minCount = width;
 		for (int y = height / 2 - 3; y < height / 2 + 3; ++y) {
 			int count = 0;
@@ -133,8 +133,8 @@ public class Ocr4 {
 	}
 
 	public static boolean isNotFive(BufferedImage img) {
-		int width = img.getWidth();
-		int height = img.getHeight();
+		final int width = img.getWidth();
+		final int height = img.getHeight();
 		int minCount = width;
 		for (int y = 0; y < height / 3; ++y) {
 			int count = 0;
@@ -150,12 +150,12 @@ public class Ocr4 {
 
 	public static String getSingleCharOcr(BufferedImage img, Map<BufferedImage, String> map) throws Exception {
 		if (useSvm) {
-			String input = new File("img/" + clazz + "/input.txt").getAbsolutePath();
-			String output = new File("result/" + clazz + "/output.txt").getAbsolutePath();
+			final String input = new File("img/" + clazz + "/input.txt").getAbsolutePath();
+			final String output = new File("result/" + clazz + "/output.txt").getAbsolutePath();
 			CommonUtil.imgToSvmInput(img, input, whiteThreshold);
 			svm_predict.main(
 					new String[] { input, new File("train/" + clazz + "/data.txt.model").getAbsolutePath(), output });
-			List<String> predict = IOUtils.readLines(new FileInputStream(output));
+			final List<String> predict = IOUtils.readLines(new FileInputStream(output));
 			if (predict.size() > 0 && predict.get(0).length() > 0) {
 				return predict.get(0).substring(0, 1);
 			}
@@ -164,23 +164,27 @@ public class Ocr4 {
 
 		String result = "#";
 		img = scaleImage(img);
-		int width = img.getWidth();
-		int height = img.getHeight();
+		final int width = img.getWidth();
+		final int height = img.getHeight();
 		int min = width * height;
-		boolean bNotEight = isNotEight(img);
-		boolean bNotThree = isNotThree(img);
-		boolean bNotFive = isNotFive(img);
-		for (BufferedImage bi : map.keySet()) {
-			if (bNotThree && map.get(bi).startsWith("3"))
+		final boolean bNotEight = isNotEight(img);
+		final boolean bNotThree = isNotThree(img);
+		final boolean bNotFive = isNotFive(img);
+		for (final BufferedImage bi : map.keySet()) {
+			if (bNotThree && map.get(bi).startsWith("3")) {
 				continue;
-			if (bNotEight && map.get(bi).startsWith("8"))
+			}
+			if (bNotEight && map.get(bi).startsWith("8")) {
 				continue;
-			if (bNotFive && map.get(bi).startsWith("5"))
+			}
+			if (bNotFive && map.get(bi).startsWith("5")) {
 				continue;
-			double count1 = getBlackCount(img);
-			double count2 = getBlackCount(bi);
-			if (Math.abs(count1 - count2) / Math.max(count1, count2) > 0.25)
+			}
+			final double count1 = getBlackCount(img);
+			final double count2 = getBlackCount(bi);
+			if (Math.abs(count1 - count2) / Math.max(count1, count2) > 0.25) {
 				continue;
+			}
 			int count = 0;
 			if (width < bi.getWidth() && height < bi.getHeight()) {
 				for (int m = 0; m <= bi.getWidth() - width; m++) {
@@ -190,23 +194,25 @@ public class Ocr4 {
 								if (CommonUtil.isWhite(img.getRGB(x - m, y - n), whiteThreshold) != CommonUtil
 										.isWhite(bi.getRGB(x, y), whiteThreshold)) {
 									count++;
-									if (count >= min)
+									if (count >= min) {
 										break Label1;
+									}
 								}
 							}
 						}
 					}
 				}
 			} else {
-				int widthmin = width < bi.getWidth() ? width : bi.getWidth();
-				int heightmin = height < bi.getHeight() ? height : bi.getHeight();
+				final int widthmin = width < bi.getWidth() ? width : bi.getWidth();
+				final int heightmin = height < bi.getHeight() ? height : bi.getHeight();
 				Label1: for (int x = 0; x < widthmin; ++x) {
 					for (int y = 0; y < heightmin; ++y) {
 						if (CommonUtil.isWhite(img.getRGB(x, y), whiteThreshold) != CommonUtil.isWhite(bi.getRGB(x, y),
 								whiteThreshold)) {
 							count++;
-							if (count >= min)
+							if (count >= min) {
 								break Label1;
+							}
 						}
 					}
 				}
@@ -220,11 +226,11 @@ public class Ocr4 {
 	}
 
 	public static String getAllOcr(String file) throws Exception {
-		BufferedImage img = removeBackgroud(file);
-		List<BufferedImage> listImg = splitImage(img);
-		Map<BufferedImage, String> map = loadTrainData();
+		final BufferedImage img = removeBackgroud(file);
+		final List<BufferedImage> listImg = splitImage(img);
+		final Map<BufferedImage, String> map = loadTrainData();
 		String result = useSvm ? "svm_" : "";
-		for (BufferedImage bi : listImg) {
+		for (final BufferedImage bi : listImg) {
 			result += getSingleCharOcr(bi, map);
 		}
 		System.out.println(result);
@@ -234,15 +240,15 @@ public class Ocr4 {
 
 	public static Map<BufferedImage, String> loadTrainData() throws Exception {
 		if (trainMap == null) {
-			Map<BufferedImage, String> map = new HashMap<BufferedImage, String>();
-			File dir = new File("train/" + clazz);
-			File[] files = dir.listFiles(new FilenameFilter() {
+			final Map<BufferedImage, String> map = new HashMap<BufferedImage, String>();
+			final File dir = new File("train/" + clazz);
+			final File[] files = dir.listFiles(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
 					return name.toLowerCase().endsWith(".jpg");
 				}
 			});
-			for (File file : files) {
+			for (final File file : files) {
 				map.put(scaleImage(ImageIO.read(file)), file.getName().charAt(0) + "");
 			}
 			trainMap = map;
@@ -251,8 +257,8 @@ public class Ocr4 {
 	}
 
 	public static int getBlackCount(BufferedImage img) {
-		int width = img.getWidth();
-		int height = img.getHeight();
+		final int width = img.getWidth();
+		final int height = img.getHeight();
 		int count = 0;
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
@@ -265,8 +271,8 @@ public class Ocr4 {
 	}
 
 	public static BufferedImage scaleImage(BufferedImage img) {
-		ScaleFilter sf = new ScaleFilter(16, 16);
-		BufferedImage imgdest = new BufferedImage(16, 16, img.getType());
+		final ScaleFilter sf = new ScaleFilter(16, 16);
+		final BufferedImage imgdest = new BufferedImage(16, 16, img.getType());
 		return sf.filter(img, imgdest);
 	}
 
@@ -280,14 +286,15 @@ public class Ocr4 {
 		new File("result/" + clazz).mkdirs();
 		// 先删除result/ocr目录，开始识别
 		for (int i = 0; i < 30; ++i) {
-			String text = getAllOcr("img/" + clazz + "/" + i + ".jpg");
+			final String text = getAllOcr("img/" + clazz + "/" + i + ".jpg");
 			System.out.println(i + ".jpg = " + text);
 		}
 
-//		CommonUtil.scaleTraindata(clazz, whiteThreshold);
-//		svm_train train = new svm_train();
-//		train.run(new String[] { new File("train/" + clazz + "/data.txt").getAbsolutePath(),
-//				new File("train/" + clazz + "/data.txt.model").getAbsolutePath() });
+		// CommonUtil.scaleTraindata(clazz, whiteThreshold);
+		// svm_train train = new svm_train();
+		// train.run(new String[] { new File("train/" + clazz +
+		// "/data.txt").getAbsolutePath(),
+		// new File("train/" + clazz + "/data.txt.model").getAbsolutePath() });
 	}
 
 }
