@@ -47,6 +47,12 @@ public class Pwntcha_Xanga {
 		}
 		return newImg;
 	}
+	
+	public static int[] getFastRGB(BufferedImage bi,int x,int y)
+	{
+		int[] pixel = bi.getRaster().getPixel(x, y, new int[3]);
+		return pixel;
+	}
 
 	public static void main(String[] args) throws Exception {
 
@@ -103,13 +109,15 @@ public class Pwntcha_Xanga {
 											|| xmin + z < 0 || ymin + t < 0) {
 										r = 255;
 									} else {
-										r = new Color(fontImg.getRGB(xmin + z, ymin + t)).getGreen();
+										r = getFastRGB(fontImg,xmin + z, ymin + t)[1];
+										//r = new Color(fontImg.getRGB(xmin + z, ymin + t)).getGreen();
 									}
 
 									if (x + z >= w || y + t >= h || x + z < 0 || y + t < 0) {
 										r2 = 255;
 									} else {
-										r2 = new Color(img.getRGB(x + z, y + t)).getGreen();
+										r2 = getFastRGB(img,x + z, y + t)[1];
+										//r2 = new Color(img.getRGB(x + z, y + t)).getGreen();
 									}
 									if (r < r2) {
 										dist += (r - r2) * (r - r2);
